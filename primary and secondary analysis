@@ -1,0 +1,6 @@
+q1->
+select city_id, c.city_name, count(trip_id) as "no.of trips" from fact_trips f
+join dim_city c 
+using (city_id)
+group by city_id
+order by count(trip_id) desc;
