@@ -1,6 +1,31 @@
-q1->
-select city_id, c.city_name, count(trip_id) as "no.of trips" from fact_trips f
+Q1->
+select city_id, count(trip_id) as "no.of trips" 
+from fact_trips f
 join dim_city c 
 using (city_id)
 group by city_id
 order by count(trip_id) desc;
+
+Q2->
+select city_name,
+round(avg(fare_amount)/avg(distance_travelled_km),2) as avg_fare
+from fact_trips
+join dim_city using(city_id)
+group by city_id
+order by avg_fare desc;
+
+Q3->
+select city_name,passenger_type,round(avg(passenger_rating),2) as passenger_rating,round(avg(driver_rating),2) as driver_rating
+from fact_trips
+join dim_city 
+using(city_id)
+group by city_id,passenger_type;
+
+Q4->
+select city_name, month(date) as mn,count(trip_id) as trips
+from fact_trips
+join dim_city
+using(city_id)
+group by city_name,mn;
+
+Q5->
