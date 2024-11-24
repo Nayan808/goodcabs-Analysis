@@ -29,3 +29,19 @@ using(city_id)
 group by city_name,mn;
 
 Q5->
+select city_name,day_type,count(trip_id) as trips, round((COUNT(trip_id) * 100.0 / SUM(COUNT(trip_id)) 
+OVER (PARTITION BY city_name)),2) AS percentage
+from fact_trips
+join dim_city using(city_id)
+join dim_date using(date)
+group by city_name,day_type;
+
+Q6->
+SELECT 
+    city_name,
+    trip_count,
+    SUM(repeat_passenger_count) AS trips,
+    concat( round((trip_count * 100.0) / SUM(trip_count) OVER (PARTITION BY city_name),2)," %") AS percentage
+FROM dim_repeat_trip_distribution
+JOIN dim_city USING(city_id)
+GROUP BY city_name, trip_count;
