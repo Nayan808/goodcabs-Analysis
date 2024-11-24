@@ -37,34 +37,20 @@ join dim_date using(date)
 group by city_name,day_type;
 
 Q6->
-
 WITH Citys AS (
-    SELECT 
-        city_name,
-        trip_count,
-        SUM(repeat_passenger_count) AS trips,
+    SELECT city_name,trip_count,SUM(repeat_passenger_count) AS trips,
         ROUND(
             (SUM(repeat_passenger_count) * 100.0) / SUM(SUM(repeat_passenger_count)) OVER(PARTITION BY city_name),
-            2
-        ) AS pct_contibution
+            2 ) AS pct_contibution
     FROM dim_repeat_trip_distribution
     JOIN dim_city USING(city_id)
     GROUP BY city_name, trip_count
 )
-SELECT 
-    city_name,
-    trip_count,
-    trips,
-    pct_contibution
+SELECT city_name,trip_count,trips, pct_contibution
 FROM (
-    SELECT 
-        city_name,
-        trip_count,
-        trips,
-        pct_contibution,
+    SELECT city_name, trip_count,trips, pct_contibution,
         ROW_NUMBER() OVER (PARTITION BY city_name ORDER BY pct_contibution DESC) AS rn
     FROM City
-) RankedTrips
-WHERE rn = 1;
+) x WHERE rn = 1;
 
 Q7->
