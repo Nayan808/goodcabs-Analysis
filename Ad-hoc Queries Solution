@@ -43,3 +43,39 @@ GROUP BY
     city_name;
 
 Q4.
+with cte as(select city_name n,sum(new_passengers) as s,
+ROW_NUMBER() OVER (ORDER BY SUM(new_passengers) DESC) AS rank_desc,
+ROW_NUMBER() OVER (ORDER BY SUM(new_passengers)) AS rank_asc
+from fact_passenger_summary
+join dim_city using(city_id)
+group by city_id 
+order by s)
+select n,s,
+CASE
+        WHEN rank_desc <= 3 THEN 'Top 3'
+        WHEN rank_asc <= 3 THEN 'Bottom 3'
+        ELSE 'Others'
+    END AS category
+from cte
+order by s desc
+
+Q5.
+WITH city_month_revenue AS (
+    SELECT   city_name, MONTH(date) AS m, SUM(fare_amount) AS t,
+        CONCAT(ROUND(SUM(fare_amount) * 100 / SUM(SUM(fare_amount)) OVER (PARTITION BY city_name), 2), 
+            "%" ) AS a,
+        ROW_NUMBER() OVER (PARTITION BY city_name ORDER BY SUM(fare_amount) DESC) AS rn
+    FROM fact_trips t
+    JOIN  dim_city USING(city_id)
+    GROUP BY city_name, m
+)
+SELECT   city_name,  m AS month,t AS total_revenue, a AS revenue_percentage
+FROM  city_month_revenue WHERE  rn = 1
+ORDER BY city_name;
+
+Q6.
+SELECT city_id,month(month) month,total_passengers,repeat_passengers,
+concat(round((repeat_passengers)*100/(total_passengers),2)," %") as monthly_repeat_passenger_rate,
+concat(round(repeat_passengers*100/sum(repeat_passengers) over(partition by city_id),2)," %") 
+as city_repeat_passenger_rate
+FROM fact_passenger_summary;
