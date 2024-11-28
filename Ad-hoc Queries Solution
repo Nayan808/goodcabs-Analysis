@@ -24,3 +24,22 @@ concat(round((c-t.total_target_trips)*100/t.total_target_trips,2)," %") as "%_di
 from cte join targets_db.monthly_target_trips t on month(t.month)=m and cte.a=t.city_id
 join dim_city d on cte.a=d.city_id
 join dim_date dt on month(dt.date)=m;
+
+Q3.
+SELECT 
+    city_name,
+  concat(    ROUND(SUM(CASE WHEN trip_count = "2-Trips" THEN repeat_passenger_count ELSE 0 END) * 100.0 / SUM(CASE WHEN trip_count >= 2 THEN repeat_passenger_count ELSE 0 END), 2)," %") AS "2-Trips",
+  concat(    ROUND(SUM(CASE WHEN trip_count = "3-Trips" THEN repeat_passenger_count ELSE 0 END) * 100.0 / SUM(CASE WHEN trip_count >= 2 THEN repeat_passenger_count ELSE 0 END), 2)," %") AS "3-Trips",
+  concat(    ROUND(SUM(CASE WHEN trip_count = "4-Trips" THEN repeat_passenger_count ELSE 0 END) * 100.0 / SUM(CASE WHEN trip_count >= 2 THEN repeat_passenger_count ELSE 0 END), 2)," %") AS "4-Trips",
+  concat(    ROUND(SUM(CASE WHEN trip_count = "5-Trips" THEN repeat_passenger_count ELSE 0 END) * 100.0 / SUM(CASE WHEN trip_count >= 2 THEN repeat_passenger_count ELSE 0 END), 2)," %") AS "6-Trips",
+  concat(    ROUND(SUM(CASE WHEN trip_count = "7-Trips" THEN repeat_passenger_count ELSE 0 END) * 100.0 / SUM(CASE WHEN trip_count >= 2 THEN repeat_passenger_count ELSE 0 END), 2)," %") AS "7-Trips",
+  concat(    ROUND(SUM(CASE WHEN trip_count = "8-Trips" THEN repeat_passenger_count ELSE 0 END) * 100.0 / SUM(CASE WHEN trip_count >= 2 THEN repeat_passenger_count ELSE 0 END), 2)," %") AS "8-Trips",
+  concat(    ROUND(SUM(CASE WHEN trip_count = "9-Trips" THEN repeat_passenger_count ELSE 0 END) * 100.0 / SUM(CASE WHEN trip_count >= 2 THEN repeat_passenger_count ELSE 0 END), 2)," %") AS "9-Trips",
+  concat(    ROUND(SUM(CASE WHEN trip_count = "10-Trips" THEN repeat_passenger_count ELSE 0 END) * 100.0 / SUM(CASE WHEN trip_count >= 2 THEN repeat_passenger_count ELSE 0 END), 2)," %") AS "10-Trips"
+FROM 
+ dim_repeat_trip_distribution
+ join dim_city using(city_id)
+GROUP BY 
+    city_name;
+
+Q4.
