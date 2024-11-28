@@ -9,3 +9,18 @@ join dim_city using(city_id)
 group by city_id;
 
 Q2.
+with cte as(select t.city_id a,month(t.month) as m ,count(distinct(trip_id)) as c
+from fact_trips f
+join dim_city using(city_id)
+join targets_db.monthly_target_trips t
+on month(t.month)=month(f.date) and f.city_id=t.city_id
+group by m,t.city_id)
+select d.city_name ,month_name ,c as "actual trip",t.total_target_trips as target_trip,
+case 
+ when c>t.total_target_trips then "Above Target"
+ when c<t.total_target_trips then "Below Target"
+end as performance_status,
+concat(round((c-t.total_target_trips)*100/t.total_target_trips,2)," %") as "%_difference"
+from cte join targets_db.monthly_target_trips t on month(t.month)=m and cte.a=t.city_id
+join dim_city d on cte.a=d.city_id
+join dim_date dt on month(dt.date)=m;
