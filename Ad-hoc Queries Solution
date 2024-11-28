@@ -1,0 +1,11 @@
+Q1.
+select city_name,count(distinct(trip_id)) as total_trips,
+sum(fare_amount)/sum(distance_travelled_km) as avg_fare_per_km,
+sum(fare_amount)/count(distinct(trip_id)) as avg_fare_per_trip,
+concat(round(count(distinct(trip_id)) *100/sum(count(distinct(trip_id))) over(),2)," %") 
+as "% Contribution to total trip"
+from fact_trips
+join dim_city using(city_id)
+group by city_id;
+
+Q2.
